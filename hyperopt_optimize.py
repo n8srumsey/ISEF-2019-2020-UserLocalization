@@ -150,13 +150,14 @@ def optimize_cnn(hype_space):
         print(err_str)
         traceback_str = str(traceback.format_exc())
         print(traceback_str)
+        print("\n\n")
         return {
             'status': STATUS_FAIL,
             'err': err_str,
             'traceback': traceback_str
         }
 
-    print("\n\n")
+
 
 
 def run_a_trial():

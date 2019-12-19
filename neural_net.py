@@ -39,7 +39,7 @@ y_train_c = keras.utils.to_categorical(y_train_c, NB_CLASSES_COARSE)
 y_test_coarse = keras.utils.to_categorical(y_test_coarse, NB_CLASSES_COARSE)
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 100
+EPOCHS = 20
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
