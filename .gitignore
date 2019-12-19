@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# PyCharm
+*.iml
+*.xml
+
+# images
+*.jpg
