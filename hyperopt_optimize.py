@@ -204,7 +204,7 @@ if __name__ == "__main__":
 
     print("\nYour results will be saved in the folder named 'results/'. "
           "You can sort that alphabetically and take the greatest one. "
-          "As you run the optimization, results are consinuously saved into a "
+          "As you run the optimization, results are continuously saved into a "
           "'results.pkl' file, too. Re-running optimize.py will resume "
           "the meta-optimization.\n")
 
