@@ -33,7 +33,7 @@ test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', ta
 num_classes = 103
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 1
+EPOCHS = 3
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
@@ -53,7 +53,7 @@ for coordinate in list_coordinate_names:
 """
 
 
-def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=False):
+def build_and_train(hype_space, save_best_weights=False):
     """Build the deep CNN model and train it."""
     K.set_learning_phase(1)
     K.set_image_data_format('channels_last')
@@ -76,23 +76,6 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
             weights_save_path,
             monitor='val_accuracy',
             save_best_only=True, mode='max'))
-
-    # TensorBoard logging callback:
-    log_path = None
-    if log_for_tensorboard:
-        log_path = os.path.join(TENSORBOARD_DIR, model_uuid)
-        print("Tensorboard log files will be saved to: {}".format(log_path))
-        if not os.path.exists(log_path):
-            os.makedirs(log_path)
-
-        tb_callback = keras.callbacks.TensorBoard(
-            log_dir=log_path,
-            histogram_freq=2,
-            # write_images=True, # Enabling this line would require more than 5 GB at each `histogram_freq` epoch.
-            write_graph=True
-        )
-        tb_callback.set_model(model)
-        callbacks.append(tb_callback)
 
     # Train net:
     history = model.fit_generator(
@@ -120,7 +103,7 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
     result = {
         # We plug "-accuracy" as a
         # minimizing metric named 'loss' by Hyperopt.
-        'loss': -max(history['accuracy']),
+        'loss': -history['val_accuracy'][-1],  # fixme | is this the loss metric I really want?
         'real_loss': score[0],
         # Stats:
         'best_loss': min(history['loss']),
@@ -136,7 +119,7 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
     print("RESULT:")
     print_json(result)
 
-    return model, model_name, result, model_uuid, log_path
+    return model, model_name, result, model_uuid
 
 
 def build_model(hype_space):
@@ -145,10 +128,8 @@ def build_model(hype_space):
     print(hype_space)
     model = Sequential()
 
-    # fixme 1/1/2020 - add printing of model
-
     # first conv+pool layer
-    n_filters = int(round(hype_space['nb_conv_filters']))  # fixme - double check the max # of layers
+    n_filters = int(round(hype_space['nb_conv_filters']))
     if hype_space['nb_conv_in_conv_pool_layers'] == 2:
         two_conv_layers = True
     else:
@@ -181,7 +162,7 @@ def build_model(hype_space):
         units=int(round(hype_space['fc_nodes_1'])),
         activation=hype_space['activation'],
         kernel_regularizer=keras.regularizers.l2(STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
-        ))
+    ))
     model.add(fc_dropout(hype_space))
 
     if hype_space['fc_second_layer'] is not None:
@@ -199,8 +180,8 @@ def build_model(hype_space):
             lr=hype_space['lr_rate']),
         loss='categorical_crossentropy',
         metrics=['accuracy'
-            # , metric_distance
-        ]
+                 # , metric_distance fixme
+                 ]
     )
     return model
 
@@ -240,6 +221,7 @@ def pooling(hype_space):
 
     else:  # 'max'
         return MaxPooling2D(pool_size=(2, 2))
+
 
 """
 def metric_distance(y_true, y_pred):
