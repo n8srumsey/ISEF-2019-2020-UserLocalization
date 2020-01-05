@@ -16,12 +16,14 @@ from keras.optimizers import Adam, Nadam, RMSprop
 from keras_preprocessing.image import ImageDataGenerator
 from utils import print_json
 
-# Set directory to save model weights
+# Set directory to save model weights to
 WEIGHTS_DIR = "weights/"
 
-# Setup data generator
+"""Setup data generator"""
+# resize images to be reduce number of parameters, to increase speed of training
 dataset_input_resize = (192, 108)
 dataset_input_shape = (192, 108, 3)
+# instantiate ImageDataGenerator
 datagen = ImageDataGenerator(rescale=1. / 225, rotation_range=10)
 train_it = datagen.flow_from_directory('data/train/', class_mode='categorical', target_size=dataset_input_resize,
                                        batch_size=16, shuffle=True)
@@ -29,6 +31,7 @@ val_it = datagen.flow_from_directory('data/validation/', class_mode='categorical
                                      batch_size=16)
 test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', target_size=dataset_input_resize,
                                       batch_size=16)
+# Define number of classes to
 num_classes = 103
 
 # Set training constants
@@ -54,13 +57,17 @@ for coordinate in list_coordinate_names:
 
 def build_and_train(hype_space, save_best_weights=False):
     """Build the deep CNN model and train it."""
+    # setup Keras to learning phase - learn
     K.set_learning_phase(1)
     K.set_image_data_format('channels_last')
 
+    # Build the model according to the hyper-parameter space passed.
     model = build_model(hype_space)
 
+    # Set model_uuid
     model_uuid = str(uuid.uuid4())[:5]
 
+    # Create callbacks list to add to as according to constructor parameters
     callbacks = []
 
     # Weight saving callback:
@@ -71,12 +78,14 @@ def build_and_train(hype_space, save_best_weights=False):
         if not os.path.exists(WEIGHTS_DIR):
             os.makedirs(WEIGHTS_DIR)
 
+        # Add weights saving callback to model's callbacks
         callbacks.append(keras.callbacks.ModelCheckpoint(
             weights_save_path,
             monitor='val_accuracy',
             save_best_only=True, mode='max'))
 
     # Train net:
+    print("\nBegin training of model:")
     history = model.fit_generator(
         train_it, validation_data=val_it,
         epochs=EPOCHS,
@@ -86,10 +95,14 @@ def build_and_train(hype_space, save_best_weights=False):
     ).history
 
     # Test net:
+    print("\nBegin evaluation of model:")
     K.set_learning_phase(0)
-    score = model.evaluate_generator(test_it, verbose=0)
+    score = model.evaluate_generator(test_it, verbose=1)
     max_acc = max(history['accuracy'])
 
+    # fixme: model predict to return 'distance' metric goes here
+
+    # Define model name
     model_name = "model_{}_{}".format(str(max_acc), model_uuid)
     print("Model name: {}".format(model_name))
 
@@ -116,7 +129,7 @@ def build_and_train(hype_space, save_best_weights=False):
         'history': history,
         'status': STATUS_OK
     }
-    print("RESULT:")
+    print("\nRESULT:")
     print_json(result)
 
     return model, model_name, result, model_uuid
@@ -128,13 +141,14 @@ def build_model(hype_space):
     print(hype_space)
     model = Sequential()
 
-    # first conv+pool layer
+    # Define parameters to goverrn construction of model according to hype_space
     n_filters = int(round(hype_space['nb_conv_filters']))
     if hype_space['nb_conv_in_conv_pool_layers'] == 2:
         two_conv_layers = True
     else:
         two_conv_layers = False
 
+    # first conv+pool layer
     model.add(first_convolution(n_filters, hype_space))
     if hype_space['conv_dropout'] is not None:
         model.add(conv_dropout(hype_space))
@@ -161,7 +175,7 @@ def build_model(hype_space):
     model.add(keras.layers.core.Dense(
         units=int(round(hype_space['fc_nodes_1'])),
         activation=hype_space['activation'],
-        kernel_regularizer=keras.regularizers.l2(STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
+        kernel_regularizer=keras.regularizers.l2(hype_space['l2_weight_reg'])
     ))
     model.add(fc_dropout(hype_space))
 
@@ -169,12 +183,12 @@ def build_model(hype_space):
         model.add(keras.layers.core.Dense(
             units=int(round(hype_space['fc_second_layer'])),
             activation=hype_space['activation'],
-            kernel_regularizer=keras.regularizers.l2(STARTING_L2_REG * hype_space['l2_weight_reg_mult'])))
+            kernel_regularizer=keras.regularizers.l2(hype_space['l2_weight_reg'])))
         model.add(fc_dropout(hype_space))
 
     model.add(Dense(num_classes, activation='softmax'))
 
-    # Finalize model:
+    # Finalize and compile model:
     model.compile(
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
             lr=hype_space['lr_rate']),
@@ -200,15 +214,16 @@ def convolution(n_filters, hype_space):
     return Conv2D(
         filters=n_filters, kernel_size=(k, k), strides=(1, 1),
         padding='same', activation=hype_space['activation'],
-        kernel_regularizer=keras.regularizers.l2(STARTING_L2_REG * hype_space['l2_weight_reg_mult']))
+        kernel_regularizer=keras.regularizers.l2(hype_space['l2_weight_reg']))
 
 
 def first_convolution(n_filters, hype_space):
+    """Basic convolution layer, parametrized by the hype_space, with input shape defined."""
     k = int(round(hype_space['conv_kernel_size']))
     return Conv2D(
         filters=n_filters, kernel_size=(k, k), strides=(1, 1),
         padding='same', activation=hype_space['activation'],
-        kernel_regularizer=keras.regularizers.l2(STARTING_L2_REG * hype_space['l2_weight_reg_mult']),
+        kernel_regularizer=keras.regularizers.l2(hype_space['l2_weight_reg']),
         input_shape=dataset_input_shape)
 
 

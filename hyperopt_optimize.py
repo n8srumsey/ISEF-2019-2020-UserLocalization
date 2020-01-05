@@ -19,8 +19,9 @@ from utils import print_json, save_json_result, load_best_hyperspace
 space = {
     # Select learning rate
     'lr_rate': hp.loguniform('lr_rate', -9.21, -3.0),
-    # L2 regularization weight decay: fixme
-    'l2_weight_reg_mult': hp.loguniform('l2_weight_reg_mult', -1.3, 1.3),
+    # L2 regularization weight decay:
+    'l2_weight_reg': hp.loguniform('l2_weight_reg', -8.6, -6.0),  # space defined according to vooban's mult times
+    #                                                               max and mmin fixme
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Activations that are used everywhere
@@ -41,7 +42,6 @@ space = {
         'max',  # Max pooling
         'avg',  # Average pooling
     ]),
-
 
     # Uniform distribution in finding appropriate dropout values for FC layers
     'fc_dropout_proba': hp.uniform('fc_dropout_proba', 0.0, 0.5),
@@ -74,6 +74,7 @@ def plot_best_model():
         print("No best model to plot. Continuing...")
         return
 
+    # Print best hyperspace and save model png
     print("Best hyperspace yet:")
     print_json(space_best_model)
     plot(space_best_model, "model_best")
@@ -87,6 +88,7 @@ def optimize_cnn(hype_space):
         # Save training results to disks with unique filenames
         save_json_result(model_name, result)
 
+        # Save .png plot of the model according to its hyper-parameters
         plot(result['space'], model_uuid)
 
         K.clear_session()
@@ -115,7 +117,7 @@ def run_a_trial():
     """Run one TPE meta optimisation step and save its results."""
     max_evals = nb_evals = 1
 
-    print("Attempt to resume a past training if it exists:")
+    print("Attempting to resume a past training if it exists:")
 
     try:
         # https://github.com/hyperopt/hyperopt/issues/267
@@ -126,7 +128,7 @@ def run_a_trial():
             len(trials.trials)))
     except:
         trials = Trials()
-        print("Starting from scratch: new trials.")
+        print("Starting from scratch: new Trials().")
 
     best = fmin(
         optimize_cnn,
@@ -143,18 +145,17 @@ def run_a_trial():
 if __name__ == "__main__":
     """Run the optimisation forever (and saves results)."""
 
-    print("Now, we train many models, one after the other.")
+    print("Will train many models, one after the other.")
 
-    print("\nYour results will be saved in the folder named 'results/'. "
-          "You can sort that alphabetically and take the greatest one. "
-          "As you run the optimization, results are continuously saved into a "
-          "'trials_history.pkl' file, too. Re-running optimize.py will resume "
-          "the meta-optimization.\n")
+    print("\nResults will be saved in the folder named 'results/'. "
+          "Results are continuously saved into a 'trials_history.pkl'"
+          "file, too. Re-running optimize.py will resume the "
+          "meta-optimization.\n")
 
     while True:
 
         # Optimize a new model with the TPE Algorithm:
-        print("OPTIMIZING NEW MODEL:")
+        print("\n\nOPTIMIZING NEW MODEL:")
         try:
             run_a_trial()
         except Exception as err:
@@ -163,6 +164,6 @@ if __name__ == "__main__":
             traceback_str = str(traceback.format_exc())
             print(traceback_str)
 
-        # Replot best model since it may have changed:
+        # Re-plot best model since it may have changed:
         print("PLOTTING BEST MODEL:")
         plot_best_model()
