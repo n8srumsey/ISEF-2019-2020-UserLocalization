@@ -7,7 +7,6 @@ This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyp
 """
 import os
 import uuid
-
 import keras
 from hyperopt import STATUS_OK
 from keras import Sequential
@@ -15,12 +14,12 @@ from keras.layers import Flatten, Dense, Dropout, SpatialDropout2D, Conv2D, Aver
 from keras.layers.core import K  # import keras.backend as K
 from keras.optimizers import Adam, Nadam, RMSprop
 from keras_preprocessing.image import ImageDataGenerator
-
 from utils import print_json
 
-TENSORBOARD_DIR = "TensorBoard/"
+# Set directory to save model weights
 WEIGHTS_DIR = "weights/"
 
+# Setup data generator
 dataset_input_resize = (192, 108)
 dataset_input_shape = (192, 108, 3)
 datagen = ImageDataGenerator(rescale=1. / 225, rotation_range=10)
@@ -32,7 +31,7 @@ test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', ta
                                       batch_size=16)
 num_classes = 103
 
-# You may want to reduce this considerably if you don't have a killer GPU:
+# Set training constants
 EPOCHS = 3
 STARTING_L2_REG = 0.0007
 
@@ -112,6 +111,7 @@ def build_and_train(hype_space, save_best_weights=False):
         'end_accuracy': score[1],
         # Misc:
         'model_name': model_name,
+        'model_uuid': model_uuid,
         'space': hype_space,
         'history': history,
         'status': STATUS_OK
@@ -179,9 +179,7 @@ def build_model(hype_space):
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
             lr=hype_space['lr_rate']),
         loss='categorical_crossentropy',
-        metrics=['accuracy'
-                 # , metric_distance fixme
-                 ]
+        metrics=['accuracy']
     )
     return model
 

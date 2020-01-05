@@ -42,6 +42,7 @@ def load_json_result(best_result_name):
 
 
 def load_best_hyperspace():
+    """Loads the hyperspace which yielded the best accuracy."""
     results = [
         f for f in list(sorted(os.listdir(RESULTS_DIR))) if 'json' in f
     ]
