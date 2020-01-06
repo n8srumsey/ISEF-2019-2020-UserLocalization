@@ -20,8 +20,7 @@ space = {
     # Select learning rate
     'lr_rate': hp.loguniform('lr_rate', -9.21, -3.0),
     # L2 regularization weight decay:
-    'l2_weight_reg': hp.loguniform('l2_weight_reg', -8.6, -6.0),  # space defined according to vooban's mult times
-    #                                                               max and mmin fixme
+    'l2_weight_reg': hp.loguniform('l2_weight_reg', -8.6, -6.0),
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Activations that are used everywhere

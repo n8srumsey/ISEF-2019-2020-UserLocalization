@@ -5,9 +5,11 @@ Contains functions to build and train a keras CNN based on passed hyperparameter
 
 This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
+import math
 import os
 import uuid
 import keras
+import numpy as np
 from hyperopt import STATUS_OK
 from keras import Sequential
 from keras.layers import Flatten, Dense, Dropout, SpatialDropout2D, Conv2D, AveragePooling2D, MaxPooling2D
@@ -42,16 +44,6 @@ OPTIMIZER_STR_TO_CLASS = {
     'Nadam': Nadam,
     'RMSprop': RMSprop
 }
-
-"""
-list_coordinate_names = [dI for dI in os.listdir('data/train') if os.path.isdir(os.path.join('data/train', dI))]
-coordinate_tuple_names = []
-for coordinate in list_coordinate_names:
-    index_y = coordinate.find('Y')
-    x_value = int(coordinate[1:index_y])
-    y_value = int(coordinate[(index_y+1):])
-    coordinate_tuple_names.append((x_value, y_value))
-"""
 
 
 def build_and_train(hype_space, save_best_weights=False):
@@ -99,28 +91,26 @@ def build_and_train(hype_space, save_best_weights=False):
     score = model.evaluate_generator(test_it, verbose=1)
     max_acc = max(history['accuracy'])
 
-    # fixme: model predict to return 'distance' metric goes here
+    euclidean_distance = euclidean_distance_metric(model)
 
     # Define model name
     model_name = "model_{}_{}".format(str(max_acc), model_uuid)
     print("Model name: {}".format(model_name))
 
-    # Note: to restore the model, you'll need to have a keras callback to
-    # save the best weights and not the final weights. Only the result is
-    # saved.
     print(history.keys())
     print(history)
     print(score)
     result = {
         # We plug "-accuracy" as a
         # minimizing metric named 'loss' by Hyperopt.
-        'loss': -history['val_accuracy'][-1],  # fixme | is this the loss metric I really want?
+        'loss': -history['val_accuracy'][-1],
         'real_loss': score[0],
         # Stats:
         'best_loss': min(history['loss']),
         'best_accuracy': max(history['accuracy']),
         'end_loss': score[0],
         'end_accuracy': score[1],
+        'euclidean_distance_error': euclidean_distance,
         # Misc:
         'model_name': model_name,
         'model_uuid': model_uuid,
@@ -235,28 +225,32 @@ def pooling(hype_space):
         return MaxPooling2D(pool_size=(2, 2))
 
 
-"""
-def metric_distance(y_true, y_pred):
-    print(K.int_shape(y_true))
-    print(K.int_shape(y_pred))
-    pred_index_tensor = K.argmax(y_pred, axis=-1)
-    true_index_tensor = K.argmax(y_true, axis=-1)
+# Setup necessary lists for euclidean distance metric
+dict_coordinate_names = test_it.class_indices
+coordinate_names = []
+for coordinate in list(dict_coordinate_names.keys()):
+    index_y = coordinate.find('Y')
+    x_value = int(coordinate[1:index_y])
+    y_value = int(coordinate[(index_y + 1):])
+    coordinate_names.append([x_value, y_value])
 
-    with tf.compat.v1.keras.backend.get_session().as_default():
-        pred_index = pred_index_tensor.eval()
-        true_index = true_index_tensor.eval()
+
+def euclidean_distance_metric(model):
+    y_pred = model.predict_generator(test_it, verbose=1, steps=100)
+    pred_max_index_list = []
+    for i in range(len(y_pred)):
+        pred_max_index_list.append(int(np.argmax(y_pred[i])))
+
+    y_true = test_it.classes
+    truth_max_index_list = y_true[:len(y_pred)]
 
     metric_distance_list = []
-    for prediction, truth in pred_index, true_index:
-        pred_x = coordinate_tuple_names[prediction][0]
-        pred_y = coordinate_tuple_names[prediction][1]
-        true_x = coordinate_tuple_names[truth][0]
-        true_y = coordinate_tuple_names[truth][1]
-        metric_distance_list.append(math.sqrt((true_x - pred_x)**2 + (true_y - pred_y)**2))
-    metric_distance_numpy = numpy.asarray(metric_distance_list).transpose()
+    for prediction, truth in zip(pred_max_index_list, truth_max_index_list):
+        pred_x = coordinate_names[prediction][0]
+        pred_y = coordinate_names[prediction][1]
+        true_x = coordinate_names[truth][0]
+        true_y = coordinate_names[truth][1]
+        metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
 
-    with tf.compat.v1.keras.backend.get_session().as_default():
-        tensor = K.constant(metric_distance_numpy)
-
-    return tensor
-"""
+    metric_distance = sum(metric_distance_list) / len(metric_distance_list)
+    return metric_distance
