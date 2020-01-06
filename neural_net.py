@@ -36,7 +36,6 @@ num_classes = 103
 
 # Set training constants
 EPOCHS = 3
-STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
     'Adam': Adam,
