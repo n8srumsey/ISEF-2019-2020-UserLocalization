@@ -37,7 +37,7 @@ test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', ta
 num_classes = 103
 
 # Set training constants
-EPOCHS = 3
+EPOCHS = 24
 
 OPTIMIZER_STR_TO_CLASS = {
     'Adam': Adam,
