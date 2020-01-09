@@ -134,3 +134,4 @@ dmypy.json
 
 # images
 *.jpg
+*.hdf5
