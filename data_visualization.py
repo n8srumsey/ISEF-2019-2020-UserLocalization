@@ -2,7 +2,6 @@
 data_visualization.py
 ~~~~~~~~~~~~~~~~~~
 Visualizaes results of hyperopt optimization.
-
 This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
 
@@ -33,7 +32,7 @@ for file_name in results:
 
 
 def print_dict_json_keys():
-    print("Here are some useful keys in our dict/json structure:")
+    print("Here are some useful keys in the dict/json structure:")
     pp.pprint(list(jsons[0].keys()))
     pp.pprint(list(jsons[0]["history"].keys()))
     pp.pprint(jsons[0]["space"])
@@ -43,7 +42,7 @@ def print_dict_json_keys():
 
 
 def plot_learning_curves_by_epoch():
-    plt.figure(figsize=(16, 12))
+    plt.figure()
     for neural_net in jsons:
         accuracy = [1.0 / 100] + neural_net["history"]["accuracy"]
         end_accuracy = neural_net["end_accuracy"]
@@ -52,7 +51,7 @@ def plot_learning_curves_by_epoch():
         plt.plot(accuracy, color=rgba)
 
     plt.xlabel('Epoch')
-    plt.ylabel('Validation Accuracy')
+    plt.ylabel('Accuracy')
     plt.title("Learning curves over time, lines colored according to best test accuracy")
     plt.show()
 
@@ -61,7 +60,7 @@ def plot_learning_curves_by_epoch():
 
 
 def discrete_set(accs, key_name, key_values):
-    plt.figure(figsize=(16, 12))
+    plt.figure()
 
     key_values = [str(i) for i in key_values]
 
@@ -77,14 +76,14 @@ def discrete_set(accs, key_name, key_values):
             already_used_labels.update({val})
 
     plt.xlabel('Epoch')
-    plt.ylabel('Test accuracy on fine labels')
+    plt.ylabel('Validation accuracy')
     plt.title("Model performance in function of the '{}' hyperparameter".format(key_name))
     plt.legend()
     plt.show()
 
 
 def int_val(accs, key_name, key_values):
-    plt.figure(figsize=(16, 12))
+    plt.figure()
     orig_kv = list(key_values)
 
     tmp_kval = [k for k in key_values if k is not None]
