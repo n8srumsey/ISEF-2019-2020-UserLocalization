@@ -18,7 +18,7 @@ from utils import print_json, save_json_result, load_best_hyperspace
 
 space = {
     # Select learning rate
-    'lr_rate': hp.loguniform('lr_rate', -6.9, -3.0),
+    'lr_rate': hp.loguniform('lr_rate', -9.8, -3.0),
     # L2 regularization weight decay:
     'l2_weight_reg': hp.loguniform('l2_weight_reg', -8.6, -6.0),
     # Choice of optimizer:
