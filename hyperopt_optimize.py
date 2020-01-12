@@ -1,7 +1,7 @@
 """
 hyperopt_optimize.py
 ~~~~~~~~~~~~~~~~~~
-Optimizes the specified neural_net model uising hyperopt, based off of the designated search space.
+Optimizes the specified neural_net model using hyperopt, based off of the designated search space.
 
 This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
