@@ -15,7 +15,7 @@ def list_trials_not_trial_history():
     trials_in_weights = []
     trials_in_trials_history = []
 
-    results_folder_path = "results"
+    results_folder_path = "../results"
     results = sorted(os.listdir(results_folder_path))
     for file_name in results:
         file_path = os.path.join(results_folder_path, file_name)
@@ -37,7 +37,7 @@ def list_trials_not_trial_history():
         file_uuid = file_name[:file_name.find(".")]
         trials_in_weights.append(file_uuid)
 
-    trials_history = pickle.load((open("trials_history.pkl", "rb")))
+    trials_history = pickle.load((open("../trials_history.pkl", "rb")))
     for trial in trials_history:
         trial_uuid = trial["result"]["model_uuid"]
         trials_in_trials_history.append(trial_uuid)
