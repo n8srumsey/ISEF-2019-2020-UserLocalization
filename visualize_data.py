@@ -1,5 +1,5 @@
 """
-data_visualization.py
+visualize_data.py
 ~~~~~~~~~~~~~~~~~~
 Visualizaes results of hyperopt optimization.
 This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
@@ -7,13 +7,12 @@ This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyp
 
 import json
 import os
-import pickle
 import pprint
-import numpy as np
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-from hyperopt.plotting import main_plot_history, main_plot_histogram
-from matplotlib import colors
+
+from data_visualization import hyperparameter_learning_curves as hlc
+from data_visualization import learning_curves as lc
+from data_visualization import scatterplot_matrices as sm
+from data_visualization import trials_data as td
 
 pp = pprint.PrettyPrinter(indent=4, width=100)
 
@@ -30,16 +29,15 @@ for file_name in results:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 def print_dict_json_keys():
     print("Here are some useful keys in the dict/json structure:")
     pp.pprint(list(jsons[0].keys()))
     pp.pprint(list(jsons[0]["history"].keys()))
     pp.pprint(jsons[0]["space"])
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+"""
 
 def plot_learning_curves_by_epoch():
     plt.figure()
@@ -55,10 +53,12 @@ def plot_learning_curves_by_epoch():
     plt.title("Learning curves over time, lines colored according to best test accuracy")
     plt.show()
 
+"""
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+"""
 def discrete_set(accs, key_name, key_values):
     plt.figure()
 
@@ -138,25 +138,23 @@ def plot_accuracy_by_hyperparameters():
             neural_net["space"][key] for neural_net in jsons
         ]
         plot_func(accs, key, key_values)
+"""
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-def plot_trials_data():
+"""def plot_trials_data():
     trials = pickle.load(open("trials_history.pkl", "rb"))
 
     print("Now plotting with some built-in functions.")
     print("Remember that the loss is the negative of the test accuracy on fine labels.\n")
 
     main_plot_history(trials)
-    main_plot_histogram(trials)
-
+    main_plot_histogram(trials)"""
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-int_params_names_to_correlate = [
+"""int_params_names_to_correlate = [
     'activation',
     'conv_dropout',
     'conv_kernel_size',
@@ -177,7 +175,7 @@ best_accs = [neural_net["best_accuracy"] for neural_net in jsons]
 
 
 def scatterplot_matrix_colored(params_names, params_values, best_accs, blur=False):
-    """Scatterplot colored according to the Z values of the points."""
+    # Scatterplot colored according to the Z values of the points.
 
     nb_params = len(params_values)
     best_accs = np.array(best_accs)
@@ -226,10 +224,17 @@ def scatterplot_matrix_colored(params_names, params_values, best_accs, blur=Fals
 def plot_scatterplot_matrices():
     scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_accs, blur=True)
     scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_accs, blur=False)
+"""
 
-
-# print_dict_json_keys()
-# plot_learning_curves_by_epoch()
-# plot_accuracy_by_hyperparameters()
-# plot_trials_data()
-# plot_scatterplot_matrices()
+if __name__ == "__main__":
+    learn_curves, hyper_learn_curves, trials_data, scatter_matrix = False, False, True, False
+    # print_dict_json_keys()
+    if learn_curves:
+        lc.plot_learning_curves_by_epoch()
+    if hyper_learn_curves:
+        hlc.plot_val_accuracy_by_hyperparameters()
+        hlc.plot_val_loss_by_hyperparameters()
+    if trials_data:
+        td.plot_trials_data()
+    if scatter_matrix:
+        sm.plot_scatterplot_matrices()
