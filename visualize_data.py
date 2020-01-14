@@ -10,10 +10,10 @@ import os
 import pprint
 
 from data_visualization import hyperparameter_learning_curves as hlc
+from data_visualization import hyperspace_search_distribution as hsd
 from data_visualization import learning_curves as lc
 from data_visualization import scatterplot_matrices as sm
 from data_visualization import trials_data as td
-from data_visualization import hyperspace_search_distribution as hsd
 
 pp = pprint.PrettyPrinter(indent=4, width=100)
 

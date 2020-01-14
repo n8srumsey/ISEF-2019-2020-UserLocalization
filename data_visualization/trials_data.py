@@ -42,6 +42,8 @@ def accuracy_loss_distance_vs_iteration():
     ax3.set_xlabel('Iteration')
 
     plt.suptitle(" Validation Accuracy, Validation Loss, and Euclidean Distance Error vs. Iteration")
+    plt.tight_layout(h_pad=.10)
+    plt.subplots_adjust(top=0.85)
     plt.show()
 
 
@@ -77,20 +79,20 @@ def best_val_accuracy_and_loss_histogram():
     after_shift_range = max(distance_error_list)
     range_scalar = before_shift_range / after_shift_range
     ax5.hist(distance_error_list, bins=int(n_bins * range_scalar + 3))
-    ax5.set_title('Euclidean Distance Error vs. Frequency')
+    ax5.set_title('Euclidean Distance vs. Frequency')
     ax5.set_xlabel('Euclidean Distance Error')
     ax5.set_ylabel('Frequency')
     ax5.set_xlim(0)
     ax6.hist(distance_error_list, bins=int(n_bins * range_scalar + 3),
              weights=np.ones(len(distance_error_list)) / len(distance_error_list))
     ax6.yaxis.set_major_formatter(PercentFormatter(1))
-    ax6.set_title('Euclidean Distance Error vs. Frequency')
+    ax6.set_title('Euclidean Distance vs. Frequency')
     ax6.set_xlabel('Euclidean Distance Error')
     ax6.set_ylabel('Frequency')
     ax6.set_xlim(0)
 
-    plt.suptitle('Validation Accuracy, Validation Loss, and Euclidean Distance Error Frequencies')
-    plt.tight_layout()
+    plt.suptitle('Validation Accuracy, Validation Loss, and Euclidean Distance Error Frequencies', y=1)
+    plt.tight_layout(h_pad=.25)
     plt.show()
 
 

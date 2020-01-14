@@ -35,7 +35,6 @@ def plot_learning_curves_by_epoch():
         axs2.plot(val_accuracy, color=rgba)
         axs1.plot(accuracy, color=rgba)
 
-
     axs1.set_xlabel('Epoch')
     axs1.set_ylabel('Accuracy')
     axs1.set_title("Accuracy vs. Epoch")
@@ -45,6 +44,7 @@ def plot_learning_curves_by_epoch():
     axs2.set_title("Validation Accuracy vs. Epoch")
 
     plt.suptitle("Learning curves over time, lines colored according to test accuracy")
+    plt.tight_layout(h_pad=.5)
     plt.show()
 
     """Plot loss learning curves"""
@@ -60,8 +60,8 @@ def plot_learning_curves_by_epoch():
         axs1.plot(loss, color=rgba)
         axs2.plot(val_loss, color=rgba)
 
-    axs1.set_ylim([0, 20])  # fixme
-    axs2.set_ylim([0, 20])  # fixme
+    axs1.set_ylim([0, 30])  # fixme
+    axs2.set_ylim([0, 30])  # fixme
 
     axs1.set_xlabel('Epoch')
     axs1.set_ylabel('Loss')
