@@ -13,6 +13,7 @@ from data_visualization import hyperparameter_learning_curves as hlc
 from data_visualization import learning_curves as lc
 from data_visualization import scatterplot_matrices as sm
 from data_visualization import trials_data as td
+from data_visualization import hyperspace_search_distribution as hsd
 
 pp = pprint.PrettyPrinter(indent=4, width=100)
 
@@ -227,7 +228,8 @@ def plot_scatterplot_matrices():
 """
 
 if __name__ == "__main__":
-    learn_curves, hyper_learn_curves, trials_data, scatter_matrix = False, False, True, False
+    learn_curves, hyper_learn_curves, trials_data, scatter_matrix, hyperspace_distribution = \
+        False, False, False, False, True
     # print_dict_json_keys()
     if learn_curves:
         lc.plot_learning_curves_by_epoch()
@@ -238,3 +240,6 @@ if __name__ == "__main__":
         td.plot_trials_data()
     if scatter_matrix:
         sm.plot_scatterplot_matrices()
+    if hyperspace_distribution:
+        hsd.boxplots()
+        hsd.scatter_vs_iteration()
