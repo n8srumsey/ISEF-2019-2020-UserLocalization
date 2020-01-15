@@ -92,8 +92,8 @@ def discrete_set_loss(accs, key_name, key_values):
             already_used_labels.update({val})
 
     plt.xlabel('Epoch')
-    plt.ylabel('Validation accuracy')
-    plt.ylim([0, 20])  # fixme
+    plt.ylabel('Validation Loss')
+    plt.ylim([0, 30])  # fixme
     plt.title("Model performance in function of the '{}' hyperparameter".format(key_name))
     plt.legend()
     plt.show()
@@ -123,8 +123,8 @@ def int_val_loss(accs, key_name, key_values):
             plt.plot(accuracy, color="black")
 
     plt.xlabel('Epoch')
-    plt.ylabel('Validation Accuracy')
-    plt.ylim([0, 20])  # fixme
+    plt.ylabel('Validation Loss')
+    plt.ylim([0, 30])  # fixme
     plt.title("Model performance in function of the '{}' hyperparameter".format(key_name))
     plt.legend()
     plt.show()

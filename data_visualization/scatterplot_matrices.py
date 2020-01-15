@@ -8,7 +8,7 @@ import json
 import os
 import numpy as  np
 import matplotlib.pyplot as plt
-from matplotlib import colors
+from matplotlib import colors, cm
 
 results_folder_path = "./results"
 results = sorted(os.listdir(results_folder_path))
@@ -37,34 +37,36 @@ int_params_names_to_correlate = [
 ]
 
 params_values = [[neural_net["space"][p] for neural_net in jsons] for p in int_params_names_to_correlate]
-best_accs = [neural_net["best_accuracy"] for neural_net in jsons]
+best_accs = [neural_net["history"]["val_accuracy"][-1] for neural_net in jsons]
+best_loss = [neural_net["history"]["val_loss"][-1] for neural_net in jsons]
 
 
-def scatterplot_matrix_colored(params_names, params_values, best_accs, blur=False):
+def scatterplot_matrix_colored(params_names, params_space_values, best_metric, blur=False):
     # Scatterplot colored according to the Z values of the points.
 
-    nb_params = len(params_values)
-    best_accs = np.array(best_accs)
-    norm = colors.Normalize(vmin=best_accs.argmin(), vmax=best_accs.argmax())
+    nb_params = len(params_space_values)
+    best_metric = np.array([float(i) for i in best_metric])
+    norm = colors.Normalize(vmin=best_metric.argmin(), vmax=best_metric.argmax())
 
     fig, ax = plt.subplots(nb_params, nb_params, figsize=(16, 16))  # , facecolor=bg_color, edgecolor=fg_color)
+    cmap = cm.get_cmap('viridis')
 
     for i in range(nb_params):
-        p1 = params_values[i]
+        p1 = params_space_values[i]
         for j in range(nb_params):
-            p2 = params_values[j]
+            p2 = params_space_values[j]
 
             axes = ax[i, j]
             # Subplot:
+
             if blur:
                 s = axes.scatter(p2, p1, s=400, alpha=.1,
-                                 c=best_accs, cmap='viridis', norm=norm)
+                                 c=cmap(best_metric), cmap=cmap, norm=norm)
                 s = axes.scatter(p2, p1, s=200, alpha=.2,
-                                 c=best_accs, cmap='viridis', norm=norm)
+                                 c=cmap(best_metric), cmap=cmap, norm=norm)
                 s = axes.scatter(p2, p1, s=100, alpha=.3,
-                                 c=best_accs, cmap='viridis', norm=norm)
-            s = axes.scatter(p2, p1, s=15,
-                             c=best_accs, cmap='plasma', norm=norm)
+                                 c=cmap(best_metric), cmap=cmap, norm=norm)
+            s = axes.scatter(p2, p1, s=15, c=cmap(best_metric), cmap=cmap, norm=norm)
 
             # Labels only on side subplots, for x and y:
             if j == 0:
@@ -88,5 +90,8 @@ def scatterplot_matrix_colored(params_names, params_values, best_accs, blur=Fals
 
 
 def plot_scatterplot_matrices():
-    scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_accs, blur=True)
     scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_accs, blur=False)
+    scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_accs, blur=True)
+    # scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_loss, blur=False)
+    # scatterplot_matrix_colored(int_params_names_to_correlate, params_values, best_loss, blur=True)
+
