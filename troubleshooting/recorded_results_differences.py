@@ -24,14 +24,14 @@ def list_trials_not_trial_history():
         trial_uuid = j["model_uuid"]
         trials_in_results.append(trial_uuid)
 
-    model_visualizations_folder_path = "model-visualizations"
+    model_visualizations_folder_path = "../model-visualizations"
     model_visualizations = sorted(os.listdir(model_visualizations_folder_path))
     for file_name in model_visualizations:
         file_uuid = file_name[:file_name.find(".")]
         if file_uuid != "model_best":
             trials_in_model_visualizations.append(file_uuid)
 
-    weights_folder_path = "weights"
+    weights_folder_path = "../weights"
     weights = sorted(os.listdir(weights_folder_path))
     for file_name in weights:
         file_uuid = file_name[:file_name.find(".")]
