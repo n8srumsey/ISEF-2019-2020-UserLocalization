@@ -60,8 +60,8 @@ def plot_learning_curves_by_epoch():
         axs1.plot(loss, color=rgba)
         axs2.plot(val_loss, color=rgba)
 
-    axs1.set_ylim([0, 30])  # fixme
-    axs2.set_ylim([0, 30])  # fixme
+    axs1.set_ylim([0, 8])  # fixme
+    axs2.set_ylim([0, 8])  # fixme
 
     axs1.set_xlabel('Epoch')
     axs1.set_ylabel('Loss')
