@@ -1,10 +1,11 @@
+scipy
 numpy
 matplotlib
-hyperopt==0.2.3
-keras==2.3.1
-pymongo==3.10.1
+hyperopt
+keras
+pymongo
 
 # if no gpu
-tensorflow ==2.1.0
+tensorflow
 # if gpu
-tensorflo-gpu ==2.0.0
+tensorflo-gpu
