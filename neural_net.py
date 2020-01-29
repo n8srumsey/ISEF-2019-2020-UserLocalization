@@ -236,7 +236,7 @@ for coordinate in list(dict_coordinate_names.keys()):
 
 
 def euclidean_distance_metric(model):
-    y_pred = model.predict_generator(test_it, verbose=1, steps=100)
+    y_pred = model.predict_generator(test_it, verbose=1)
     pred_max_index_list = []
     for i in range(len(y_pred)):
         pred_max_index_list.append(int(np.argmax(y_pred[i])))
