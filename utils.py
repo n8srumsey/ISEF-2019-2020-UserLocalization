@@ -54,6 +54,18 @@ def load_best_hyperspace():
     best_result_name = results[-1]
     return load_json_result(best_result_name)["space"]
 
+  
+def load_jsons():
+    results_folder_path = "results"
+    results = sorted(os.listdir(results_folder_path))
+    jsons = []
+    for file_name in results:
+        file_path = os.path.join(results_folder_path, file_name)
+        with open(file_path) as f:
+            j = json.load(f)
+        jsons.append(j)
+    return jsons
+  
 
 # For retraining of best model hyper-parameters
 def save_json_result_retrained(model_name, result):
@@ -86,3 +98,5 @@ def load_best_hyperspace_retrained():
 
     best_result_name = results[-1]
     return load_json_result_retrained(best_result_name)["space"]
+
+

@@ -73,4 +73,5 @@ def list_trials_not_trial_history():
     print(sorted(diff_weights_trial_history))
 
 
-list_trials_not_trial_history()
+if __name__ == '__main__':
+    list_trials_not_trial_history()

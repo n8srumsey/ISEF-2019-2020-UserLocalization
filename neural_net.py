@@ -32,7 +32,7 @@ train_it = datagen.flow_from_directory('data/train/', class_mode='categorical', 
 val_it = datagen.flow_from_directory('data/validation/', class_mode='categorical', target_size=dataset_input_resize,
                                      batch_size=16)
 test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', target_size=dataset_input_resize,
-                                      batch_size=16)
+                                      batch_size=8)
 # Define number of classes to
 num_classes = 103
 
