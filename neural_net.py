@@ -8,6 +8,8 @@ This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyp
 import math
 import os
 import uuid
+
+import PIL.Image as Image
 import keras
 import numpy as np
 from hyperopt import STATUS_OK
@@ -15,7 +17,9 @@ from keras import Sequential
 from keras.layers import Flatten, Dense, Dropout, SpatialDropout2D, Conv2D, AveragePooling2D, MaxPooling2D
 from keras.layers.core import K  # import keras.backend as K
 from keras.optimizers import Adam, Nadam, RMSprop
-from keras_preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import img_to_array
+
 from utils import print_json
 
 # Set directory to save model weights to
@@ -27,11 +31,11 @@ dataset_input_resize = (192, 108)
 dataset_input_shape = (192, 108, 3)
 # instantiate ImageDataGenerator
 datagen = ImageDataGenerator(rescale=1. / 225, rotation_range=10)
-train_it = datagen.flow_from_directory('data/train/', class_mode='categorical', target_size=dataset_input_resize,
+train_it = datagen.flow_from_directory('../data/train/', class_mode='categorical', target_size=dataset_input_resize,
                                        batch_size=16, shuffle=True)
-val_it = datagen.flow_from_directory('data/validation/', class_mode='categorical', target_size=dataset_input_resize,
+val_it = datagen.flow_from_directory('../data/validation/', class_mode='categorical', target_size=dataset_input_resize,
                                      batch_size=16)
-test_it = datagen.flow_from_directory('data/test/', class_mode='categorical', target_size=dataset_input_resize,
+test_it = datagen.flow_from_directory('../data/test/', class_mode='categorical', target_size=dataset_input_resize,
                                       batch_size=16)
 # Define number of classes to
 num_classes = 103
@@ -236,7 +240,7 @@ for coordinate in list(dict_coordinate_names.keys()):
 
 
 def euclidean_distance_metric(model):
-    y_pred = model.predict_generator(test_it, verbose=1)
+    """y_pred = model.predict_generator(test_it, verbose=1)
     pred_max_index_list = []
     for i in range(len(y_pred)):
         pred_max_index_list.append(int(np.argmax(y_pred[i])))
@@ -252,5 +256,44 @@ def euclidean_distance_metric(model):
         true_y = coordinate_names[truth][1]
         metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
 
+    metric_distance = sum(metric_distance_list) / len(metric_distance_list)"""
+
+    rootdir = '../data/validation'
+
+    metric_distance_list = []
+
+    true_max_index_list = test_it.classes
+
+    index_to_coordinate = {y: x for x, y in test_it.class_indices.items()}
+
+    i = 0
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            # load the image
+            img = Image.open(os.path.join(subdir, file))
+            im = img.resize(dataset_input_resize)
+
+            im_arr = img_to_array(im)
+            im_arr = im_arr[np.newaxis, :, :, :]
+            im_arr = np.swapaxes(im_arr, 1, 2)
+
+            pred = model.predict_classes(x=im_arr)
+
+            index_pred = int(np.argmax(pred))
+            pred_coord_name = index_to_coordinate[index_pred]
+
+            index_true = true_max_index_list[i]
+
+            pred_x = coordinate_names[index_pred][0]
+            pred_y = coordinate_names[index_true][1]
+            true_x = coordinate_names[index_pred][0]
+            true_y = coordinate_names[index_true][1]
+
+            print(pred_x, pred_y, true_x, true_y)
+            metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
+
+            i += 1
+
     metric_distance = sum(metric_distance_list) / len(metric_distance_list)
+
     return metric_distance
