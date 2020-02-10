@@ -56,7 +56,7 @@ def load_best_hyperspace():
 
   
 def load_jsons():
-    results_folder_path = "results"
+    results_folder_path = "../results"
     results = sorted(os.listdir(results_folder_path))
     jsons = []
     for file_name in results:
