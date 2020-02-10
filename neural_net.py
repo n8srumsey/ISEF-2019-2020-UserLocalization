@@ -240,24 +240,6 @@ for coordinate in list(dict_coordinate_names.keys()):
 
 
 def euclidean_distance_metric(model):
-    """y_pred = model.predict_generator(test_it, verbose=1)
-    pred_max_index_list = []
-    for i in range(len(y_pred)):
-        pred_max_index_list.append(int(np.argmax(y_pred[i])))
-
-    y_true = test_it.classes
-    truth_max_index_list = y_true[:len(y_pred)]
-
-    metric_distance_list = []
-    for prediction, truth in zip(pred_max_index_list, truth_max_index_list):
-        pred_x = coordinate_names[prediction][0]
-        pred_y = coordinate_names[prediction][1]
-        true_x = coordinate_names[truth][0]
-        true_y = coordinate_names[truth][1]
-        metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
-
-    metric_distance = sum(metric_distance_list) / len(metric_distance_list)"""
-
     rootdir = '../data/validation'
 
     metric_distance_list = []
