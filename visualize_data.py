@@ -2,7 +2,6 @@
 visualize_data.py
 ~~~~~~~~~~~~~~~~~~
 Visualizaes results of hyperopt optimization.
-This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
 
 import json
@@ -229,7 +228,7 @@ def plot_scatterplot_matrices():
 
 if __name__ == "__main__":
     learn_curves, hyper_learn_curves, trials_data, scatter_matrix, hyperspace_distribution = \
-        False, False, False, True, False
+        True, False, False, False, False
     # print_dict_json_keys()
     if learn_curves:
         lc.plot_learning_curves_by_epoch()

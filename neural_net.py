@@ -37,7 +37,7 @@ val_it = datagen.flow_from_directory('../data/validation/', class_mode='categori
                                      batch_size=16)
 test_it = datagen.flow_from_directory('../data/test/', class_mode='categorical', target_size=dataset_input_resize,
                                       batch_size=16)
-# Define number of classes to
+# Define number of classes
 num_classes = 103
 
 # Set training constants
@@ -229,7 +229,7 @@ def pooling(hype_space):
         return MaxPooling2D(pool_size=(2, 2))
 
 
-# Setup necessary lists for euclidean distance metric
+# Setup necessary for euclidean distance metric
 dict_coordinate_names = test_it.class_indices
 coordinate_names = []
 for coordinate in list(dict_coordinate_names.keys()):
@@ -246,7 +246,7 @@ def euclidean_distance_metric(model):
 
     true_max_index_list = test_it.classes
 
-    index_to_coordinate = {y: x for x, y in test_it.class_indices.items()}
+    index_to_coordinate = {y: x for x, y in test_it.class_indices.items()}  # uneeded but can be useful for other code
 
     i = 0
     for subdir, dirs, files in os.walk(rootdir):
@@ -255,27 +255,31 @@ def euclidean_distance_metric(model):
             img = Image.open(os.path.join(subdir, file))
             im = img.resize(dataset_input_resize)
 
+            # convert image to array
             im_arr = img_to_array(im)
             im_arr = im_arr[np.newaxis, :, :, :]
             im_arr = np.swapaxes(im_arr, 1, 2)
 
+            # predict class
             pred = model.predict_classes(x=im_arr)
 
+            # interpret prediction
             index_pred = int(np.argmax(pred))
-            pred_coord_name = index_to_coordinate[index_pred]
-
             index_true = true_max_index_list[i]
-
             pred_x = coordinate_names[index_pred][0]
             pred_y = coordinate_names[index_true][1]
             true_x = coordinate_names[index_pred][0]
             true_y = coordinate_names[index_true][1]
 
-            print(pred_x, pred_y, true_x, true_y)
+            # print predicted and actual coordinates
+            print("Predicted Coordinate: (%d, %d) \nActual Coordinates: (%d, %d)" % (pred_x, pred_y, true_x, true_y))
+
+            # save result to list
             metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
 
             i += 1
 
+    # find average euclidean distance error
     metric_distance = sum(metric_distance_list) / len(metric_distance_list)
 
     return metric_distance

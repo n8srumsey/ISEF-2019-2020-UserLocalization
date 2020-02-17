@@ -14,10 +14,14 @@ results_folder_path = "../results"
 i = 1
 jsons = load_jsons()
 
+num_jsons = len(jsons)
+
 
 if __name__ == '__main__':
+    """Loads the final weights of each model and then re-evaluates the euclidean distance error of each model, in order 
+    to have the correct and accurate metric values"""
     for json_file in jsons:
-        print("Reevaluating model %d/101" % i)
+        print("Reevaluating model %d/" % i, num_jsons)
 
         model_uuid = json_file["model_uuid"]
         space = json_file["space"]
@@ -43,5 +47,5 @@ if __name__ == '__main__':
             f.truncate()
             f.close()
 
-        print("Metric distance of model %d/101: " % i + str(metric_distance))  # for trouble shooting purposes
+        print("Metric distance of model %d/" % i, "%d: " % num_jsons + str(metric_distance))
         i += 1
