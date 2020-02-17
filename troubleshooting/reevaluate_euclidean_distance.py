@@ -30,7 +30,7 @@ if __name__ == '__main__':
         model = build_model(space)
 
         # load saved final weights
-        weights_path = "weights/%s.hdf5" % model_uuid
+        weights_path = "../weights/%s.hdf5" % model_uuid
         model.load_weights(weights_path)
 
         # evaluate euclidean distance
