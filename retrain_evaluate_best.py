@@ -13,7 +13,7 @@ import keras.backend as K
 from keras.utils import plot_model
 
 from neural_nets_retrain import build_and_train, build_model
-from utils import print_json, save_json_result_retrained, load_best_hyperspace_retrained
+from utils import print_json, save_json_result_retrained, load_best_hyperspace_retrained, load_jsons
 
 
 def plot(hype_space, file_name_prefix):
@@ -39,7 +39,7 @@ def plot_best_model():
     # Print best hyperspace and save model png
     print("Best hyperspace yet:")
     print_json(space_best_model)
-    plot(space_best_model, "model_best")
+    plot(space_best_model, "retrained_model_best")
 
 
 def train_cnn(hype_space, model_uuid_real):
@@ -80,12 +80,7 @@ if __name__ == "__main__":
     results_folder_path = "results"
     results = sorted(os.listdir(results_folder_path))
 
-    jsons = []
-    for file_name in results:
-        file_path = os.path.join(results_folder_path, file_name)
-        with open(file_path) as f:
-            j = json.load(f)
-        jsons.append(j)
+    jsons = load_jsons()
 
     jsons_best = sorted(range(len(jsons)), key=lambda i: jsons[i]["history"]["val_accuracy"][-1], reverse=True)[:10]
     # jsons_best = sorted(range(len(jsons)), key=lambda i: jsons[i]["history"]["val_loss"][-1], reverse=True)[:10]
@@ -95,7 +90,7 @@ if __name__ == "__main__":
     for json in best_jsons:
         hyperspace = json["space"]
         # Optimize a new model with the TPE Algorithm:
-        print(format("\n\nTRAINING NEXT MODEL: %s/10", str(i)))
+        print("\n\nTRAINING NEXT MODEL: {}/10".format(str(i)))
         try:
             train_cnn(hyperspace, json["model_uuid"])
             print("\n-TRAINING STEP COMPLETE-\n")
