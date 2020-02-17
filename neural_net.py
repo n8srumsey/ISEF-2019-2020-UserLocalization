@@ -272,7 +272,9 @@ def euclidean_distance_metric(model):
             true_y = coordinate_names[index_true][1]
 
             # print predicted and actual coordinates
-            print("Predicted Coordinate: (%d, %d) \nActual Coordinates: (%d, %d)" % (pred_x, pred_y, true_x, true_y))
+            if pred_x != true_x or pred_y != true_y:
+                print("      Predicted Coordinate: (%d, %d) \n      Actual Coordinates: (%d, %d)" % (pred_x, pred_y,
+                                                                                                     true_x, true_y))
 
             # save result to list
             metric_distance_list.append(math.sqrt((true_x - pred_x) ** 2 + (true_y - pred_y) ** 2))
