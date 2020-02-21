@@ -240,6 +240,11 @@ for coordinate in list(dict_coordinate_names.keys()):
 
 
 def euclidean_distance_metric(model):
+    """Evaluates the average metric distance error in the coordinate predictions
+
+    ***IMPORTANT*** This does not seem to work. Refer to reevaluate_euclidean_distance.py for best metric.
+
+    """
     rootdir = '../data/validation'
 
     metric_distance_list = []
