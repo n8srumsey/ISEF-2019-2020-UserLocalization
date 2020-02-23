@@ -2,8 +2,6 @@
 utils.py
 ~~~~~~~~~~~~~~~~~~
 Contains functions to save, load, and print the training results with JSON utils.
-
-This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
 
 import json
@@ -56,6 +54,7 @@ def load_best_hyperspace():
 
   
 def load_jsons():
+    """Return a list of decrypted results found in the results directory"""
     results_folder_path = "../results"
     results = sorted(os.listdir(results_folder_path))
     jsons = []
@@ -98,5 +97,3 @@ def load_best_hyperspace_retrained():
 
     best_result_name = results[-1]
     return load_json_result_retrained(best_result_name)["space"]
-
-

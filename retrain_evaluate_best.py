@@ -2,10 +2,7 @@
 retrain_evaluate_best.py
 ~~~~~~~~~~~~~~~~~~
 Optimizes the specified neural_net model using hyperopt, based off of the designated search space.
-
-This is based off of Vooban's demonstration repo @ https://github.com/Vooban/Hyperopt-Keras-CNN-CIFAR-100
 """
-import json
 import os
 import traceback
 
@@ -76,12 +73,13 @@ if __name__ == "__main__":
 
     print("\nResults will be saved in the folder named 'results-retrained/'")
 
-    # The following code is used to find and store the ten best models
-    results_folder_path = "results"
+    # Identify the ten best models
+    results_folder_path = "../results"
     results = sorted(os.listdir(results_folder_path))
 
     jsons = load_jsons()
 
+    # sort jsons by validation accuracy
     jsons_best = sorted(range(len(jsons)), key=lambda i: jsons[i]["history"]["val_accuracy"][-1], reverse=True)[:10]
     # jsons_best = sorted(range(len(jsons)), key=lambda i: jsons[i]["history"]["val_loss"][-1], reverse=True)[:10]
     best_jsons = [jsons[i] for i in jsons_best]
@@ -89,8 +87,10 @@ if __name__ == "__main__":
     i = 1
     for json in best_jsons:
         hyperspace = json["space"]
-        # Optimize a new model with the TPE Algorithm:
-        print("\n\nTRAINING NEXT MODEL: {}/10".format(str(i)))
+
+        # Train the next model
+        print(format("\n\nTRAINING NEXT MODEL: %s/10", str(i)))
+
         try:
             train_cnn(hyperspace, json["model_uuid"])
             print("\n-TRAINING STEP COMPLETE-\n")
