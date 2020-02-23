@@ -36,7 +36,7 @@ def plot_best_model():
     # Print best hyperspace and save model png
     print("Best hyperspace yet:")
     print_json(space_best_model)
-    plot(space_best_model, "model_best")
+    plot(space_best_model, "retrained_model_best")
 
 
 def train_cnn(hype_space, model_uuid_real):
@@ -90,6 +90,7 @@ if __name__ == "__main__":
 
         # Train the next model
         print(format("\n\nTRAINING NEXT MODEL: %s/10", str(i)))
+
         try:
             train_cnn(hyperspace, json["model_uuid"])
             print("\n-TRAINING STEP COMPLETE-\n")

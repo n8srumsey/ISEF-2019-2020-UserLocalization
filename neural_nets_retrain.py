@@ -91,7 +91,7 @@ def build_and_train(hype_space, model_uuid, save_best_weights=True):
     euclidean_distance = euclidean_distance_metric(model)
 
     # Define model name
-    model_name = "model_{}_{}".format(str(max_acc), model_uuid)
+    model_name = "retrained_model_{}_{}".format(str(max_acc), model_uuid)
     print("Model name: {}".format(model_name))
 
     print(history.keys())
