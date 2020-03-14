@@ -4,22 +4,17 @@ statistical-analysis.py
 
 Performs and records results of statistical analyses.
 """
-import json
 import os
 import scipy.stats as stats
 import pprint
+from utils import load_jsons
 
 pp = pprint.PrettyPrinter(indent=4, width=100)
 
 results_folder_path = "../results"
 results = sorted(os.listdir(results_folder_path))
 
-jsons = []
-for file_name in results:
-    file_path = os.path.join(results_folder_path, file_name)
-    with open(file_path) as f:
-        j = json.load(f)
-    jsons.append(j)
+jsons = load_jsons()
 
 # Calculate t-test of training versus validation accuracy and loss
 t_statistics = [[], []]
