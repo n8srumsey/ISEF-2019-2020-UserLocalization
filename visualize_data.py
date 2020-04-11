@@ -36,7 +36,7 @@ def print_dict_json_keys():
 
 if __name__ == "__main__":
     learn_curves, hyper_learn_curves, trials_data, scatter_matrix, hyperspace_distribution = \
-        True, False, False, False, False
+        False, False, True, False, False
     # print_dict_json_keys()
     if learn_curves:
         lc.plot_learning_curves(retrained=False)

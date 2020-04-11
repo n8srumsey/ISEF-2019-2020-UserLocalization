@@ -4,10 +4,11 @@ trials_data.py
 Defines functions to print trials data.
 
 """
-
+import math
 import pickle
 
 import matplotlib.pyplot as plt
+import numpy
 import numpy as np
 from matplotlib.ticker import PercentFormatter
 
@@ -16,14 +17,22 @@ trials = pickle.load(open("./trials_history.pkl", "rb"))
 
 def accuracy_loss_distance_vs_iteration():
     # fixme iterations start at 0
-    val_acc_list = [i["result"]["history"]["val_accuracy"][-1] for i in trials]
+    data = [i["result"]["history"]["val_accuracy"][-1] for i in trials]
 
     f, (ax1) = plt.subplots(1)
-    ax1.plot(val_acc_list, linestyle='None', marker='.')
+    ax1.plot(data, linestyle='None', marker='.')
     #    ax1.axhline(max(val_acc_list))
     ax1.set_title('Validation Accuracy vs. Bayesian Optimization Iteration')
     ax1.set_ylabel('Validation Accuracy')
     ax1.set_xlabel('Iteration')
+
+    xdata = [i for i in range(len(data))]
+
+    y = [math.log1p(i) for i in data]
+
+    z = numpy.polyfit(xdata, data, 1)
+    p = numpy.poly1d(z)
+    ax1.plot(p(xdata), "r--")
 
     plt.tight_layout(h_pad=.10)
     plt.subplots_adjust(top=0.85)
